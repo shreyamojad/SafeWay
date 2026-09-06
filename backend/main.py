@@ -47,7 +47,7 @@ async def calculate_route(request: RouteRequest):
         f"https://router.project-osrm.org/route/v1/driving/"
         f"{request.source_lon},{request.source_lat};"
         f"{request.destination_lon},{request.destination_lat}"
-        f"?overview=false&alternatives=true"
+        f"?overview=full&geometries=geojson&alternatives=true"
     )
 
     async with httpx.AsyncClient() as client:
@@ -66,7 +66,8 @@ async def calculate_route(request: RouteRequest):
         routes.append({
             "distance_km": round(route["distance"] / 1000, 2),
             "duration_minutes": round(route["duration"] / 60, 2),
-            "safety_score": safety_score
+            "safety_score": safety_score,
+            "geometry": route["geometry"]
         })
 
     return {
