@@ -33,6 +33,16 @@ def calculate_safety_score(route_index):
     return round(safety_score, 2)
 
 
+def generate_safety_explanation():
+    return {
+        "crime": "Low crime risk",
+        "lighting": "Good street lighting",
+        "traffic": "Moderate traffic",
+        "crowd": "Good crowd activity",
+        "overall": "This route has a relatively good safety profile."
+    }
+
+
 @app.get("/")
 def home():
     return {
@@ -80,7 +90,8 @@ async def calculate_route(request: RouteRequest):
             "distance_km": round(route["distance"] / 1000, 2),
             "duration_minutes": round(route["duration"] / 60, 2),
             "safety_score": safety_score,
-            "geometry": route["geometry"]
+            "geometry": route["geometry"],
+            "safety_explanation": generate_safety_explanation()
         })
 
     # Find the route with the highest safety score
