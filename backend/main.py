@@ -13,6 +13,23 @@ class RouteRequest(BaseModel):
     preference: str
 
 
+def calculate_safety_score():
+    # Temporary prototype values
+    crime_score = 80
+    lighting_score = 85
+    traffic_score = 75
+    crowd_score = 80
+
+    safety_score = (
+        crime_score * 0.35
+        + lighting_score * 0.25
+        + traffic_score * 0.20
+        + crowd_score * 0.20
+    )
+
+    return round(safety_score, 2)
+
+
 @app.get("/")
 def home():
     return {"message": "SafeWay Backend is running!"}
@@ -41,7 +58,18 @@ async def calculate_route(request: RouteRequest):
 
     route_data = response.json()
 
+    safety_score = calculate_safety_score()
+
+    routes = []
+
+    for route in route_data["routes"]:
+        routes.append({
+            "distance_km": round(route["distance"] / 1000, 2),
+            "duration_minutes": round(route["duration"] / 60, 2),
+            "safety_score": safety_score
+        })
+
     return {
         "preference": request.preference,
-        "routes": route_data["routes"]
+        "routes": routes
     }
