@@ -13,8 +13,8 @@ class RouteRequest(BaseModel):
     preference: str
 
 
-def calculate_safety_score():
-    # Temporary prototype values
+def calculate_safety_score(route_index):
+    # Temporary prototype safety factors
     crime_score = 80
     lighting_score = 85
     traffic_score = 75
@@ -26,6 +26,9 @@ def calculate_safety_score():
         + traffic_score * 0.20
         + crowd_score * 0.20
     )
+
+    # Temporarily make each route different
+    safety_score = safety_score - (route_index * 12)
 
     return round(safety_score, 2)
 
@@ -58,11 +61,11 @@ async def calculate_route(request: RouteRequest):
 
     route_data = response.json()
 
-    safety_score = calculate_safety_score()
-
     routes = []
 
-    for route in route_data["routes"]:
+    for route_index, route in enumerate(route_data["routes"]):
+        safety_score = calculate_safety_score(route_index)
+
         routes.append({
             "distance_km": round(route["distance"] / 1000, 2),
             "duration_minutes": round(route["duration"] / 60, 2),
