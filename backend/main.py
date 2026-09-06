@@ -94,15 +94,64 @@ async def calculate_route(request: RouteRequest):
             "safety_explanation": generate_safety_explanation()
         })
 
-    # Find the route with the highest safety score
-    safest_route_index = max(
-        range(len(routes)),
-        key=lambda i: routes[i]["safety_score"]
-    )
+    # Check user's preference
+    preference = request.preference.lower()
+
+    if preference == "fastest":
+
+        # Choose route with shortest travel time
+        recommended_route_index = min(
+            range(len(routes)),
+            key=lambda i: routes[i]["duration_minutes"]
+        )
+
+    elif preference == "balanced":
+
+        # Balanced score:
+        # 60% safety + 40% travel time
+        max_duration = max(
+            route["duration_minutes"] for route in routes
+        )
+
+        for route in routes:
+
+            if max_duration == 0:
+                time_score = 100
+            else:
+                time_score = (
+                    1 - route["duration_minutes"] / max_duration
+                ) * 100
+
+            route["balanced_score"] = round(
+                route["safety_score"] * 0.60
+                + time_score * 0.40,
+                2
+            )
+
+        recommended_route_index = max(
+            range(len(routes)),
+            key=lambda i: routes[i]["balanced_score"]
+        )
+
+    elif preference == "safest":
+
+        # Choose route with highest safety score
+        recommended_route_index = max(
+            range(len(routes)),
+            key=lambda i: routes[i]["safety_score"]
+        )
+
+    else:
+
+        # Default to safest if an unknown preference is provided
+        recommended_route_index = max(
+            range(len(routes)),
+            key=lambda i: routes[i]["safety_score"]
+        )
 
     return {
-        "preference": request.preference,
+        "preference": preference,
         "routes": routes,
-        "recommended_route_index": safest_route_index,
-        "recommended_route": routes[safest_route_index]
+        "recommended_route_index": recommended_route_index,
+        "recommended_route": routes[recommended_route_index]
     }
