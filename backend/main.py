@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 import httpx
 
 app = FastAPI()
@@ -11,6 +11,44 @@ class RouteRequest(BaseModel):
     destination_lat: float
     destination_lon: float
     preference: str
+
+    @field_validator("preference")
+    @classmethod
+    def validate_preference(cls, value):
+        value = value.lower()
+
+        allowed_preferences = [
+            "fastest",
+            "balanced",
+            "safest"
+        ]
+
+        if value not in allowed_preferences:
+            raise ValueError(
+                "Preference must be fastest, balanced, or safest"
+            )
+
+        return value
+
+    @field_validator("source_lat", "destination_lat")
+    @classmethod
+    def validate_latitude(cls, value):
+        if value < -90 or value > 90:
+            raise ValueError(
+                "Latitude must be between -90 and 90"
+            )
+
+        return value
+
+    @field_validator("source_lon", "destination_lon")
+    @classmethod
+    def validate_longitude(cls, value):
+        if value < -180 or value > 180:
+            raise ValueError(
+                "Longitude must be between -180 and 180"
+            )
+
+        return value
 
 
 def calculate_safety_score(route_index):
@@ -68,15 +106,33 @@ async def calculate_route(request: RouteRequest):
         f"?overview=full&geometries=geojson&alternatives=true"
     )
 
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url)
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.get(url)
 
-    if response.status_code != 200:
+        if response.status_code != 200:
+            return {
+                "error": "Routing service returned an error",
+                "status_code": response.status_code
+            }
+
+        route_data = response.json()
+
+    except httpx.RequestError:
         return {
-            "error": "Unable to get route"
+            "error": "Unable to connect to routing service"
         }
 
-    route_data = response.json()
+    # Check if OSRM found any routes
+    if route_data.get("code") != "Ok":
+        return {
+            "error": "No route could be found for the given locations"
+        }
+
+    if not route_data.get("routes"):
+        return {
+            "error": "No routes available"
+        }
 
     routes = []
 
@@ -94,12 +150,11 @@ async def calculate_route(request: RouteRequest):
             "safety_explanation": generate_safety_explanation()
         })
 
-    # Check user's preference
-    preference = request.preference.lower()
+    # User preference
+    preference = request.preference
 
     if preference == "fastest":
 
-        # Choose route with shortest travel time
         recommended_route_index = min(
             range(len(routes)),
             key=lambda i: routes[i]["duration_minutes"]
@@ -107,7 +162,6 @@ async def calculate_route(request: RouteRequest):
 
     elif preference == "balanced":
 
-        # Balanced score:
         # 60% safety + 40% travel time
         max_duration = max(
             route["duration_minutes"] for route in routes
@@ -133,17 +187,8 @@ async def calculate_route(request: RouteRequest):
             key=lambda i: routes[i]["balanced_score"]
         )
 
-    elif preference == "safest":
-
-        # Choose route with highest safety score
-        recommended_route_index = max(
-            range(len(routes)),
-            key=lambda i: routes[i]["safety_score"]
-        )
-
     else:
-
-        # Default to safest if an unknown preference is provided
+        # Safest
         recommended_route_index = max(
             range(len(routes)),
             key=lambda i: routes[i]["safety_score"]
