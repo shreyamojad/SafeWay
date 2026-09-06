@@ -1,12 +1,15 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+import httpx
 
 app = FastAPI()
 
 
 class RouteRequest(BaseModel):
-    source: str
-    destination: str
+    source_lat: float
+    source_lon: float
+    destination_lat: float
+    destination_lon: float
     preference: str
 
 
@@ -21,10 +24,24 @@ def health_check():
 
 
 @app.post("/route")
-def calculate_route(request: RouteRequest):
+async def calculate_route(request: RouteRequest):
+
+    url = (
+        f"https://router.project-osrm.org/route/v1/driving/"
+        f"{request.source_lon},{request.source_lat};"
+        f"{request.destination_lon},{request.destination_lat}"
+        f"?overview=false&alternatives=true"
+    )
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+
+    if response.status_code != 200:
+        return {"error": "Unable to get route"}
+
+    route_data = response.json()
+
     return {
-        "source": request.source,
-        "destination": request.destination,
         "preference": request.preference,
-        "message": "Route request received successfully"
+        "routes": route_data["routes"]
     }
