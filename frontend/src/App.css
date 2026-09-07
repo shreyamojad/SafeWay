@@ -1,0 +1,258 @@
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+}
+.app-title {
+  text-align: center;
+  font-size: 42px;
+  margin-bottom: 10px;
+}
+
+.app-subtitle {
+  text-align: center;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+.location-input {
+  width: 100%;
+  max-width: 600px;
+  padding: 14px;
+  margin: 8px auto;
+  display: block;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.route-button {
+  display: block;
+  margin: 15px auto 30px;
+  padding: 14px 30px;
+  font-size: 17px;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #2563eb;
+  color: white;
+  transition: 0.3s;
+}
+
+.route-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+.route-button {
+  background-color: #2563eb;
+  color: white;
+  transition: 0.3s;
+}
+
+.route-button:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-2px);
+}
+.route-info {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.route-info h2 {
+  margin-top: 0;
+}
+h2 {
+  text-align: center;
+}
+
+.app > p {
+  text-align: center;
+}
+.location-input:focus {
+  outline: none;
+  border-color: #555;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+.leaflet-container {
+  border-radius: 12px;
+  margin-top: 20px;
+}
+@media (max-width: 600px) {
+  .app {
+    padding: 15px;
+  }
+
+  .app-title {
+    font-size: 32px;
+  }
+
+  .app-subtitle {
+    font-size: 15px;
+  }
+
+  .leaflet-container {
+    height: 400px !important;
+  }
+}
+.navbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px 30px;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar h2 {
+  margin: 0;
+}
+
+.nav-links {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+  font-weight: bold;
+}
+
+.nav-links span {
+  cursor: pointer;
+}
+
+.nav-links span:hover {
+  text-decoration: underline;
+}
+.safety-score {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+.safety-score h2 {
+  margin-top: 0;
+}
+
+.score-number {
+  font-size: 48px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.safety-score p {
+  margin: 0;
+}
+.risk-level {
+  max-width: 400px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  text-align: center;
+  background-color: #f8f9fa;
+}
+
+.risk-level h2 {
+  margin-top: 0;
+}
+
+.risk-value {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.risk-level p {
+  margin: 0;
+}
+.safety-factors {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+}
+
+.safety-factors h2 {
+  margin-top: 0;
+  text-align: center;
+}
+
+.safety-factors ul {
+  padding-left: 25px;
+}
+
+.safety-factors li {
+  margin: 10px 0;
+}
+.score-number {
+  font-size: 50px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.safety-score p {
+  font-size: 16px;
+  margin: 0;
+}
+.route-card {
+  max-width: 500px;
+  margin: 30px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.route-card h2 {
+  margin-top: 0;
+}
+
+.route-card p {
+  margin: 12px 0;
+  font-size: 16px;
+}
+.route-preference {
+  max-width: 600px;
+  margin: 25px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+  text-align: center;
+}
+
+.route-preference h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.preference-options {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+}
+
+.preference-options label {
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.preference-options input {
+  margin-right: 8px;
+  cursor: pointer;
+}
